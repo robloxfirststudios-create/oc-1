@@ -5,16 +5,17 @@ Orbit is a lightweight Discord management bot for Roblox and ER:LC-style communi
 ## Run & Operate
 
 - `pnpm --filter @workspace/api-server run dev` — run the HTTP health service and Discord bot
-- `pnpm run typecheck` — full typecheck across all packages
-- `pnpm run build` — typecheck + build all packages
-- `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
+- `pnpm start` — same single-service start command used by Railway
+- `pnpm railway:build` — Railway production build
+- `pnpm run typecheck` — typecheck the bot service
+- `pnpm run build` — typecheck + build the bot service
 - Required secret: `DISCORD_TOKEN`
 - Optional env: `DATA_DIR` (defaults to `./data`)
+- Railway deployment settings live in `railway.json` and `RAILWAY.md`
 
 ## Stack
 
-- pnpm workspaces, Node.js 24, TypeScript 5.9
+- pnpm workspace, Node.js 24, TypeScript 5.9
 - API: Express 5
 - DB: PostgreSQL + Drizzle ORM
 - Validation: Zod (`zod/v4`), `drizzle-zod`
@@ -26,6 +27,7 @@ Orbit is a lightweight Discord management bot for Roblox and ER:LC-style communi
 - `artifacts/api-server/src/bot.ts` — Discord commands, events, buttons, modals, and permission checks
 - `artifacts/api-server/src/database.ts` — SQLite schema and persistence helpers
 - `artifacts/api-server/.env.example` — required environment variables
+- `package.json` — single root deployment entrypoint for Railway
 
 ## Architecture decisions
 
