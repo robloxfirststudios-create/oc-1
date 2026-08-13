@@ -1,0 +1,931 @@
+# Discord Management Bot — Full Replit Build Prompt
+
+Build me a **professional Discord management bot** similar in functionality and presentation to the **PRC Management bot**, but with completely original code, branding, UI, and implementation.
+
+The bot is intended for Roblox/ER:LC-style communities and staff teams.
+
+## MOST IMPORTANT REQUIREMENT — SAVE REPLIT CREDITS
+
+You MUST prioritize using the **least possible Replit/AI credits**.
+
+Before doing anything:
+
+* Inspect the existing project.
+* Do NOT unnecessarily recreate files that already work.
+* Do NOT repeatedly rewrite the same code.
+* Do NOT install unnecessary packages.
+* Use lightweight, reliable dependencies.
+* Avoid external APIs unless absolutely necessary.
+* Prefer Discord's native features.
+* Use SQLite or another lightweight local database rather than a large database service.
+* Keep configuration centralized.
+* Build reusable components instead of duplicating code.
+* Fix only the relevant files when debugging.
+* Do not generate huge amounts of unnecessary documentation.
+* Do not use AI APIs inside the Discord bot.
+* Do not create unnecessary animations or resource-heavy systems.
+* Keep the bot capable of running cheaply on Replit.
+* After completing a feature, test it before moving onto the next feature.
+* Do not rebuild working features unless required.
+
+The finished bot should be efficient enough to run on a small/cheap Replit deployment.
+
+---
+
+# 1. Core Bot
+
+Use:
+
+* Node.js
+* discord.js
+* SQLite
+* `.env` for secrets
+* Modular JavaScript/TypeScript architecture
+
+The bot must use:
+
+**Prefix:** `!`
+
+Also support Discord slash commands where appropriate.
+
+Example:
+
+`!help`
+
+`!ticket`
+
+`!report`
+
+`!embed`
+
+`!mod`
+
+`!dm`
+
+The bot should have proper error handling and never expose tokens, database credentials, or internal errors to users.
+
+---
+
+# 2. Configuration System
+
+Create a simple configuration system where server administrators can configure:
+
+* Bot prefix
+* Staff roles
+* Developer roles
+* Tester roles
+* Moderator roles
+* Administrator roles
+* Ticket category
+* Ticket support roles
+* Report channel
+* Developer report channel
+* Moderation log channel
+* Join/leave log channel
+* Auto-role
+* Reaction-role channels
+* Welcome channel
+* Command permissions
+* Embed colours
+* Bot status
+* Anonymous DM settings
+
+Configuration should be stored in SQLite.
+
+Create an easy command such as:
+
+`!setup`
+
+which opens a configuration menu using Discord buttons/select menus/modals where possible.
+
+---
+
+# 3. Ticket System
+
+Create a professional ticket system.
+
+Command:
+
+`!ticket`
+
+The bot sends a nice embed containing a ticket panel.
+
+Buttons:
+
+* 🎫 Create Ticket
+* 📋 View Tickets / appropriate staff option
+
+When a user creates a ticket:
+
+* Create a private ticket channel.
+* Give access to the ticket creator.
+* Give access to configured support/staff roles.
+* Deny access to everyone else.
+* Use a consistent naming format.
+* Send an attractive welcome embed.
+* Include buttons:
+
+  * Claim
+  * Close
+  * Add User
+  * Remove User
+  * Transcript
+
+Ticket features:
+
+* Claim ticket
+* Unclaim ticket
+* Close ticket
+* Reopen ticket if configured
+* Add member
+* Remove member
+* Rename ticket
+* Create transcript
+* Log ticket closure
+* Log ticket creation
+* Record who claimed/closed it
+
+Transcript files should be lightweight HTML or TXT files.
+
+Do not store huge amounts of unnecessary ticket data.
+
+---
+
+# 4. Tester Reports
+
+Create a professional **Tester Report System**.
+
+Command:
+
+`!tester`
+
+The bot should send a beautiful embed with a button:
+
+**Submit Tester Report**
+
+When clicked, open a Discord modal.
+
+Fields:
+
+* Tester
+* Game/Server
+* Feature Tested
+* Result
+* Bugs Found
+* Severity
+* Additional Information
+
+Allow the report to be submitted.
+
+Send the finished report to the configured tester-report channel as a professional embed.
+
+Embed should contain:
+
+* Tester
+* Date/time
+* Feature
+* Result
+* Severity
+* Bugs
+* Additional information
+
+Use Discord timestamps where useful.
+
+Add buttons:
+
+* ✅ Reviewed
+* 🔧 Needs Developer Attention
+* ❌ Rejected
+* 📌 Marked Important
+
+Only authorized staff should be able to use review buttons.
+
+Log report status changes.
+
+---
+
+# 5. Developer Progress Reports
+
+Create a system similar to the Tester Reports system.
+
+Command:
+
+`!devreport`
+
+Button:
+
+**Submit Developer Progress Report**
+
+Modal fields:
+
+* Developer
+* Project/Feature
+* Current Progress
+* Completed Work
+* Work Remaining
+* Problems/Issues
+* Estimated Completion
+* Additional Notes
+
+Send the result as a professional embed.
+
+Buttons:
+
+* 👀 Reviewed
+* 🧪 Ready for Testing
+* 🔧 Needs Changes
+* ✅ Completed
+
+Keep the visual style consistent with Tester Reports.
+
+---
+
+# 6. Embed Builder
+
+Create a powerful but simple embed builder.
+
+Command:
+
+`!embed`
+
+Open a Discord interface using buttons/modals/select menus.
+
+Allow users with permission to configure:
+
+* Title
+* Description
+* Colour
+* Footer
+* Footer icon
+* Author
+* Author icon
+* Thumbnail
+* Image
+* Timestamp
+* Fields
+* Inline fields
+
+Include a live preview where practical.
+
+Buttons:
+
+* Preview
+* Add Field
+* Edit
+* Clear
+* Send
+* Cancel
+
+The bot should not require users to write JSON.
+
+Only authorized users should be able to use the builder.
+
+---
+
+# 7. Anonymous DM
+
+Create:
+
+`!dm @user message`
+
+This sends an anonymous DM to the selected user.
+
+The recipient should receive something like:
+
+**Anonymous Message**
+
+> [message]
+
+Do NOT reveal the sender to the recipient.
+
+However, the bot must securely log the actual sender ID in an administrator-only log channel/database for moderation and abuse prevention.
+
+Prevent users from spoofing another user's identity.
+
+Add basic anti-spam/rate limiting.
+
+If a user attempts to abuse the system, staff should be able to identify the sender through logs.
+
+Also create a safer slash-command equivalent if useful.
+
+---
+
+# 8. Auto Roles
+
+Create an automatic role system.
+
+When a member joins:
+
+* Automatically assign configured role(s).
+* Log the role assignment.
+* Do not assign roles higher than the bot's highest role.
+* Handle missing/deleted roles gracefully.
+
+Commands:
+
+`!autorole`
+
+Allow administrators to configure the role.
+
+---
+
+# 9. Auto Reactions
+
+Create an auto-reaction system.
+
+Administrators can configure:
+
+* Channel
+* Emoji
+* Optional trigger/message behavior
+
+For example:
+
+Whenever a message is sent in a configured channel, automatically react with:
+
+👍
+
+Allow multiple auto reactions.
+
+Store configuration in SQLite.
+
+Commands:
+
+`!autoreaction`
+
+---
+
+# 10. Moderation System
+
+Create a complete moderation system.
+
+Commands:
+
+`!warn`
+
+`!warnings`
+
+`!clear`
+
+`!kick`
+
+`!ban`
+
+`!unban`
+
+`!timeout`
+
+`!untimeout`
+
+`!lock`
+
+`!unlock`
+
+`!slowmode`
+
+`!nick`
+
+`!purge`
+
+Every moderation action should create a professional log embed.
+
+Include:
+
+* Moderator
+* Target
+* Action
+* Reason
+* Date/time
+* Case number
+
+Create a case system such as:
+
+`Case #104`
+
+Store moderation cases in SQLite.
+
+Add warning history.
+
+Example:
+
+`!warnings @User`
+
+shows previous warnings.
+
+---
+
+# 11. Logging System
+
+Create configurable logs for:
+
+* Member joins
+* Member leaves
+* Message deletion
+* Message edits
+* Moderation
+* Tickets
+* Tester reports
+* Developer reports
+* Anonymous DMs
+* Role changes where practical
+* Server configuration changes
+
+Each log should use clean Discord embeds.
+
+Do not log unnecessary sensitive information.
+
+---
+
+# 12. Welcome System
+
+Create an optional welcome system.
+
+Allow administrators to configure:
+
+* Welcome channel
+* Welcome message
+* Embed title
+* Embed description
+* Embed colour
+* Member mention
+* Server member count
+
+Command:
+
+`!welcome`
+
+---
+
+# 13. Reaction Roles
+
+Create a reaction/button role system.
+
+Prefer **Discord buttons/select menus** over old-style reactions where possible, but support reaction roles if configured.
+
+Example:
+
+**Choose your roles**
+
+🛠️ Development
+🧪 Tester
+🎮 Community
+📢 Notifications
+
+Users can select/remove roles.
+
+---
+
+# 14. Staff Utilities
+
+Add useful commands:
+
+`!userinfo`
+
+`!serverinfo`
+
+`!avatar`
+
+`!roleinfo`
+
+`!channelinfo`
+
+`!botinfo`
+
+`!ping`
+
+`!uptime`
+
+`!say`
+
+`!announce`
+
+`!poll`
+
+`!slowmode`
+
+`!lock`
+
+`!unlock`
+
+`!move`
+
+`!nickname`
+
+`!removerole`
+
+`!addrole`
+
+Only allow dangerous commands to authorized roles.
+
+---
+
+# 15. Staff Application System
+
+Create an optional staff application system.
+
+Command:
+
+`!apply`
+
+Open a modal with configurable questions.
+
+Example questions:
+
+* Roblox username
+* Discord username
+* Age
+* Previous experience
+* Why do you want to join staff?
+* Why should we choose you?
+* Additional information
+
+Applications should be sent to a configured private staff channel.
+
+Buttons:
+
+* Accept
+* Deny
+* Interview
+
+Log decisions.
+
+Make questions configurable.
+
+---
+
+# 16. Bug Report System
+
+Create:
+
+`!bug`
+
+Open a modal.
+
+Fields:
+
+* Bug
+* Location
+* Steps to reproduce
+* Expected result
+* Actual result
+* Severity
+* Evidence/link
+
+Send as an embed to a configured bug channel.
+
+Buttons:
+
+* 🔴 Open
+* 🟡 Investigating
+* 🔵 Fixed
+* 🟢 Closed
+
+---
+
+# 17. Suggestions System
+
+Create:
+
+`!suggest`
+
+Users submit suggestions through a modal.
+
+Send suggestions to a configured channel.
+
+Automatically add:
+
+👍
+
+👎
+
+Allow staff to mark suggestions as:
+
+* Considering
+* Accepted
+* Rejected
+* Implemented
+
+---
+
+# 18. Help System
+
+Create:
+
+`!help`
+
+Do NOT dump a massive list of commands into one message.
+
+Use categories and buttons/select menus:
+
+* General
+* Moderation
+* Tickets
+* Reports
+* Staff
+* Administration
+* Utility
+
+Make the help interface look professional.
+
+---
+
+# 19. Permissions
+
+Create a centralized permission system.
+
+Support:
+
+* Everyone
+* Moderator
+* Tester
+* Developer
+* Staff
+* Administrator
+* Server Owner
+
+Never rely only on command names to protect dangerous functionality.
+
+Check Discord permissions as well as configured bot roles.
+
+---
+
+# 20. Cooldown / Anti-Spam System
+
+Implement lightweight cooldowns.
+
+Prevent spam on:
+
+* Anonymous DMs
+* Reports
+* Tickets
+* Applications
+* Suggestions
+* Commands
+
+Use an in-memory cooldown where possible instead of unnecessarily writing every cooldown to the database.
+
+---
+
+# 21. Database
+
+Use SQLite.
+
+Create sensible tables for:
+
+* guild configuration
+* tickets
+* moderation cases
+* warnings
+* tester reports
+* developer reports
+* applications
+* suggestions
+* bug reports
+* reaction roles
+* auto reactions
+* anonymous DM logs
+
+Keep the database lightweight.
+
+Do not create unnecessary tables.
+
+---
+
+# 22. Professional Appearance
+
+The bot should look like a serious professional management bot.
+
+Use:
+
+* Clean embeds
+* Consistent colours
+* Emojis where appropriate
+* Discord timestamps
+* Buttons
+* Select menus
+* Modals
+* Clear error messages
+* Consistent formatting
+
+Do NOT copy PRC Management's branding, exact graphics, copyrighted assets, or source code.
+
+Create an original visual identity.
+
+---
+
+# 23. Error Handling
+
+The bot must gracefully handle:
+
+* Missing permissions
+* Missing roles
+* Deleted channels
+* Deleted messages
+* Invalid users
+* Invalid commands
+* Discord API errors
+* Database errors
+* Bot restarts
+
+Never crash the entire bot because one command fails.
+
+Send users simple errors such as:
+
+> ❌ You don't have permission to use this command.
+
+Do not expose stack traces to Discord users.
+
+Log technical errors privately.
+
+---
+
+# 24. Security
+
+Keep:
+
+* Discord bot token
+* API keys
+* Database credentials
+
+inside `.env`.
+
+Create:
+
+`.env.example`
+
+Never put secrets directly inside source code.
+
+Never expose anonymous DM sender information to normal users.
+
+Prevent users from using admin commands through manipulated interactions.
+
+Validate every button, modal, select menu, and command interaction.
+
+---
+
+# 25. File Structure
+
+Keep the project modular.
+
+Use a structure similar to:
+
+```text
+/
+├── src/
+│   ├── commands/
+│   ├── events/
+│   ├── interactions/
+│   ├── systems/
+│   ├── database/
+│   ├── utils/
+│   ├── config/
+│   └── index.js
+├── data/
+├── .env
+├── .env.example
+├── package.json
+└── README.md
+```
+
+Do not create hundreds of unnecessary files.
+
+Combine small related utilities where sensible.
+
+---
+
+# 26. Setup
+
+Create a simple setup process.
+
+When the bot starts for the first time, it should:
+
+1. Connect to Discord.
+2. Initialize SQLite.
+3. Create missing database tables.
+4. Load configuration.
+5. Register commands.
+6. Log that the bot is ready.
+
+Create a simple administrator setup command:
+
+`!setup`
+
+Use interactive Discord menus to configure the important channels and roles.
+
+---
+
+# 27. Command Prefix
+
+The primary prefix MUST be:
+
+`!`
+
+Examples:
+
+```text
+!help
+!ticket
+!tester
+!devreport
+!embed
+!warn @user reason
+!warnings @user
+!dm @user message
+!bug
+!suggest
+!apply
+```
+
+Support slash commands for systems where Discord interactions make the interface better.
+
+---
+
+# 28. Dashboard — OPTIONAL
+
+Only build a web dashboard if it can be done **without significantly increasing complexity, hosting requirements, or Replit credit usage**.
+
+If implemented, make it lightweight.
+
+Dashboard features could include:
+
+* Guild configuration
+* Ticket settings
+* Auto roles
+* Auto reactions
+* Moderation settings
+* Report channels
+* Embed builder
+
+Do NOT build a dashboard before the Discord bot itself is fully functional.
+
+---
+
+# 29. Testing
+
+Before considering the project complete, test:
+
+* Bot startup
+* Commands
+* Permissions
+* Tickets
+* Ticket closing
+* Ticket transcripts
+* Tester reports
+* Developer reports
+* Embed builder
+* Anonymous DM
+* Auto roles
+* Auto reactions
+* Moderation
+* Logging
+* SQLite persistence
+* Bot restart persistence
+* Error handling
+
+Fix actual errors found during testing.
+
+Do not continuously regenerate working code.
+
+---
+
+# 30. Final Requirements
+
+The finished project should be:
+
+* Professional
+* Fast
+* Lightweight
+* Secure
+* Easy to configure
+* Easy to expand
+* Suitable for Roblox/ER:LC communities
+* Cheap to run on Replit
+* Low-maintenance
+* Modular
+
+Most importantly:
+
+**DO NOT waste Replit AI credits.**
+
+Work incrementally.
+
+First inspect the project, then implement the core bot, then implement the systems one at a time.
+
+Do not repeatedly ask me to approve every small decision. Make sensible implementation decisions yourself.
+
+Do not add unnecessary features just to make the code larger.
+
+Prioritize **working functionality over excessive code**.
+
+If a feature can be implemented in 50 lines cleanly instead of 300 lines, use the 50-line solution.
+
+If Discord already provides functionality natively, use Discord's native functionality rather than creating a complicated custom system.
+
+When finished, provide a concise summary of:
+
+* What was implemented
+* How to configure `.env`
+* How to start the bot
+* Main commands
+* Any Discord permissions the bot needs
+* Any remaining limitations
