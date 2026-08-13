@@ -1,0 +1,1 @@
+- [Discord bot operations](discord-bot-operations.md) — preserve the lightweight HTTP health service beside the Discord client and SQLite state.

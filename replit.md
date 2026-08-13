@@ -1,15 +1,16 @@
-# [Project name]
+# Orbit Management Bot
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+Orbit is a lightweight Discord management bot for Roblox and ER:LC-style communities, with SQLite-backed configuration, moderation, tickets, reports, and staff utilities.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+- `pnpm --filter @workspace/api-server run dev` — run the HTTP health service and Discord bot
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
 - `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+- Required secret: `DISCORD_TOKEN`
+- Optional env: `DATA_DIR` (defaults to `./data`)
 
 ## Stack
 
@@ -22,23 +23,35 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/api-server/src/bot.ts` — Discord commands, events, buttons, modals, and permission checks
+- `artifacts/api-server/src/database.ts` — SQLite schema and persistence helpers
+- `artifacts/api-server/.env.example` — required environment variables
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- SQLite uses WAL mode to stay lightweight while surviving restarts.
+- The bot keeps anonymous message content out of logs and stores only a hash for abuse tracing.
+- Discord permissions and configured server roles are checked together for dangerous actions.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+## Product
+
+- Interactive private tickets with claims, closure, member access, and transcripts
+- Tester, developer, bug, suggestion, and staff application forms
+- Role/channel setup menu, welcome messages, auto roles, and auto reactions
+- Case-based moderation with warnings and moderation logging
+- Embed builder, anonymous DMs, role panels, polls, announcements, and utility commands
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+Keep the bot inexpensive to run and prefer Discord-native UI components over extra web infrastructure.
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- The bot needs Message Content, Server Members, and moderation-related intents enabled in the Discord Developer Portal.
+- The bot role must sit above any role it assigns or moderates.
+- Configure the server with `!setup` before using destination-based reports and logs.
 
 ## Pointers
 
