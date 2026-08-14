@@ -1,13 +1,13 @@
 # Railway setup
 
-This repository is configured as one Railway service. Railway should use the root of the repository; do not select an individual workspace package.
+This repository is configured as one Railway service. Railway should use the root of the repository; do not select an individual workspace package. The service uses the root `Dockerfile` so Railway does not need to infer the pnpm workspace build.
 
 ## Deploy
 
 1. Create a new Railway project from this repository.
 2. Add the secret variable `DISCORD_TOKEN`.
 3. Add `DATA_DIR=/app/data`.
-4. Deploy. Railway reads `railway.json` automatically.
+4. Deploy. Railway reads `railway.json` and builds the root `Dockerfile` automatically.
 5. Add a Railway Volume mounted at `/app/data` if you want SQLite data to survive redeploys.
 
 Railway supplies `PORT` automatically. The health check is:

@@ -1,0 +1,17 @@
+.git
+.cache
+.local
+.agents
+node_modules
+**/node_modules
+dist
+**/dist
+data
+**/data
+attached_assets
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+.env
+.env.*
+!.env.example

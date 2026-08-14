@@ -1,1 +1,2 @@
 - [Discord bot operations](discord-bot-operations.md) — preserve the lightweight HTTP health service beside the Discord client and SQLite state.
+- [Railway container builds](railway-container-builds.md) — use an explicit Dockerfile for the pnpm workspace and native SQLite dependency instead of relying on Nixpacks inference.
