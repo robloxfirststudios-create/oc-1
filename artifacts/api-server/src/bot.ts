@@ -595,6 +595,143 @@ function helpEmbed() {
     .setFooter({ text: "Prefix: ! • Use Discord permissions and configured roles together" });
 }
 
+function slashCommands() {
+  const command = (name: string, description: string) =>
+    new SlashCommandBuilder().setName(name).setDescription(description);
+  const target = (builder: SlashCommandBuilder, description = "Member to target", withReason = false) => {
+    const next = builder.addUserOption((option) => option.setName("user").setDescription(description).setRequired(true));
+    return withReason
+      ? next.addStringOption((option) => option.setName("reason").setDescription("Reason or details").setRequired(false))
+      : next;
+  };
+
+  return [
+    command("help", "Open the management help menu"),
+    command("ping", "Check the bot gateway latency"),
+    command("uptime", "Show bot uptime and service status"),
+    command("botinfo", "Show bot uptime and service status"),
+    command("serverinfo", "Show information about this server"),
+    target(command("userinfo", "Show information about a member"), "Member to inspect"),
+    command("avatar", "Show a member's avatar").addUserOption((option) => option.setName("user").setDescription("Member to inspect").setRequired(false)),
+    command("roleinfo", "Show information about a role").addRoleOption((option) => option.setName("role").setDescription("Role to inspect").setRequired(true)),
+    command("channelinfo", "Show information about a channel").addChannelOption((option) => option.setName("channel").setDescription("Channel to inspect").setRequired(false)),
+    command("prefix", "Change the server command prefix").addStringOption((option) => option.setName("prefix").setDescription("New prefix, up to three characters").setRequired(true).setMaxLength(3)),
+    command("ticketcategory", "Set the category used for new tickets").addChannelOption((option) => option.setName("channel").setDescription("Category for new tickets").addChannelTypes(ChannelType.GuildCategory).setRequired(true)),
+    command("setup", "Open the interactive server setup menu"),
+    command("ticket", "Post a private support ticket panel"),
+    command("tester", "Post a tester report form panel"),
+    command("devreport", "Post a developer progress form panel"),
+    command("bug", "Post a bug report form panel"),
+    command("suggest", "Post a community suggestion form panel"),
+    command("apply", "Post a staff application form panel"),
+    command("embed", "Open the staff embed builder"),
+    command("dm", "Send an anonymous message").addUserOption((option) => option.setName("user").setDescription("Recipient").setRequired(true)).addStringOption((option) => option.setName("message").setDescription("Message to send").setRequired(true)),
+    command("autorole", "Set the role given to new members").addRoleOption((option) => option.setName("role").setDescription("Role to give new members").setRequired(true)),
+    command("autoreaction", "Configure an automatic reaction").addChannelOption((option) => option.setName("channel").setDescription("Channel where the reaction runs").setRequired(true)).addStringOption((option) => option.setName("emoji").setDescription("Emoji to add").setRequired(true)).addStringOption((option) => option.setName("trigger").setDescription("Optional text trigger").setRequired(false)),
+    command("welcome", "Configure welcome messages").addChannelOption((option) => option.setName("channel").setDescription("Welcome channel").setRequired(true)).addStringOption((option) => option.setName("message").setDescription("Welcome message; supports {user}, {server}, and {count}").setRequired(false)),
+    target(command("warn", "Warn a member"), "Member to warn", true),
+    target(command("warnings", "View a member's warnings"), "Member whose warnings to view"),
+    command("clear", "Delete recent messages").addIntegerOption((option) => option.setName("amount").setDescription("Number of messages, from 1 to 100").setMinValue(1).setMaxValue(100).setRequired(false)),
+    target(command("kick", "Kick a member"), "Member to kick", true),
+    target(command("ban", "Ban a member"), "Member to ban", true),
+    command("unban", "Unban a user by ID").addStringOption((option) => option.setName("user").setDescription("Banned user ID").setRequired(true)).addStringOption((option) => option.setName("reason").setDescription("Reason").setRequired(false)),
+    target(command("timeout", "Timeout a member"), "Member to timeout", true).addIntegerOption((option) => option.setName("duration").setDescription("Duration in seconds").setMinValue(1).setMaxValue(28800).setRequired(false)),
+    target(command("untimeout", "Remove a member's timeout"), "Member to untimeout", true),
+    command("lock", "Lock the current channel"),
+    command("unlock", "Unlock the current channel"),
+    command("slowmode", "Set the current channel slowmode").addIntegerOption((option) => option.setName("seconds").setDescription("Seconds, from 0 to 21600").setMinValue(0).setMaxValue(21600).setRequired(true)),
+    target(command("nick", "Change a member's nickname"), "Member whose nickname to change", true),
+    target(command("nickname", "Change a member's nickname"), "Member whose nickname to change", true),
+    command("purge", "Delete recent messages").addIntegerOption((option) => option.setName("amount").setDescription("Number of messages, from 1 to 100").setMinValue(1).setMaxValue(100).setRequired(false)),
+    target(command("addrole", "Add a role to a member"), "Member receiving the role").addRoleOption((option) => option.setName("role").setDescription("Role to add").setRequired(true)),
+    target(command("removerole", "Remove a role from a member"), "Member losing the role").addRoleOption((option) => option.setName("role").setDescription("Role to remove").setRequired(true)),
+    target(command("move", "Move a member to a voice channel"), "Member to move").addChannelOption((option) => option.setName("channel").setDescription("Destination voice channel").setRequired(true)),
+    command("reactionrole", "Create a button role panel").addRoleOption((option) => option.setName("role").setDescription("Role to toggle").setRequired(true)).addStringOption((option) => option.setName("label").setDescription("Button label").setRequired(true)),
+    command("say", "Send a staff announcement").addStringOption((option) => option.setName("message").setDescription("Message to send").setRequired(true)),
+    command("announce", "Send a staff announcement").addStringOption((option) => option.setName("message").setDescription("Message to send").setRequired(true)),
+    command("poll", "Create a yes or no poll").addStringOption((option) => option.setName("message").setDescription("Poll question").setRequired(true)),
+  ];
+}
+
+function slashArguments(interaction: ChatInputCommandInteraction) {
+  const name = interaction.commandName;
+  const userId = interaction.options.getUser("user")?.id;
+  const roleId = interaction.options.getRole("role")?.id;
+  const channelId = interaction.options.getChannel("channel")?.id;
+  const text = interaction.options.getString("message");
+  const reason = interaction.options.getString("reason");
+  const args: string[] = [];
+
+  if (["userinfo", "avatar", "warn", "warnings", "kick", "ban", "timeout", "untimeout", "nick", "nickname", "addrole", "removerole", "move"].includes(name) && userId) args.push(userId);
+  if (name === "unban") args.push(interaction.options.getString("user", true));
+  if (["roleinfo", "autorole", "reactionrole"].includes(name) && roleId) args.push(roleId);
+  if (["channelinfo", "ticketcategory", "autoreaction", "welcome", "move"].includes(name) && channelId) {
+    if (name === "move") args.push(channelId);
+    else args.push(channelId);
+  }
+  if (name === "prefix") args.push(interaction.options.getString("prefix", true));
+  if (name === "autoreaction") {
+    args.push(interaction.options.getString("emoji", true));
+    const trigger = interaction.options.getString("trigger");
+    if (trigger) args.push(trigger);
+  }
+  if (name === "welcome") {
+    const welcomeMessage = interaction.options.getString("message");
+    if (welcomeMessage) args.push(welcomeMessage);
+  }
+  if (name === "reactionrole") args.push(interaction.options.getString("label", true));
+  if (["say", "announce", "poll"].includes(name) && text) args.push(text);
+  if (name === "dm") {
+    if (userId) args.push(userId);
+    if (text) args.push(text);
+  }
+  if (["clear", "purge"].includes(name)) args.push(String(interaction.options.getInteger("amount") ?? 10));
+  if (name === "slowmode") args.push(String(interaction.options.getInteger("seconds", true)));
+  if (name === "timeout") args.push(String(interaction.options.getInteger("duration") ?? 60));
+  if (["warn", "kick", "ban", "timeout", "untimeout", "nick", "nickname", "unban"].includes(name) && reason) args.push(reason);
+  if (["addrole", "removerole"].includes(name) && roleId) args.push(roleId);
+  if (name === "autoreaction" && channelId) {
+    args.splice(0, args.length, channelId, interaction.options.getString("emoji", true));
+    const trigger = interaction.options.getString("trigger");
+    if (trigger) args.push(trigger);
+  }
+  if (name === "welcome" && channelId) {
+    args.splice(0, args.length, channelId);
+    const welcomeMessage = interaction.options.getString("message");
+    if (welcomeMessage) args.push(welcomeMessage);
+  }
+  return args;
+}
+
+async function executeSlashCommand(interaction: ChatInputCommandInteraction) {
+  if (!interaction.guild || !interaction.channel?.isSendable()) {
+    await interaction.reply({ embeds: [errorEmbed("This command can only be used in a server channel.")], ephemeral: true });
+    return;
+  }
+  const message = {
+    author: interaction.user,
+    member: interaction.member as GuildMember,
+    guild: interaction.guild,
+    channel: interaction.channel,
+    client: interaction.client,
+    mentions: {
+      members: { first: () => undefined },
+      roles: { first: () => undefined },
+      channels: { first: () => undefined },
+    },
+    delete: async () => undefined,
+    reply: (payload: Parameters<Message["reply"]>[0]) =>
+      interaction.replied || interaction.deferred
+        ? interaction.followUp(payload as never)
+        : interaction.reply(payload as never),
+  } as unknown as Message;
+
+  await executeCommand(message, interaction.commandName, slashArguments(interaction));
+  if (!interaction.replied && !interaction.deferred) {
+    await interaction.reply({ embeds: [okEmbed("Done.")] });
+  }
+}
+
 async function executeCommand(message: Message, name: string, args: string[]) {
   if (!message.guild || message.author.bot) return;
   if (!message.channel.isSendable()) return;
@@ -639,7 +776,7 @@ async function executeCommand(message: Message, name: string, args: string[]) {
     return;
   }
   if (name === "channelinfo") {
-    const channel = message.mentions.channels.first() ?? message.channel;
+    const channel = message.mentions.channels.first() ?? message.guild.channels.cache.get(args[0] ?? "") ?? message.channel;
     const channelName = "name" in channel ? channel.name : "unknown";
     const createdAt = channel.createdTimestamp ?? Date.now();
     await reply({ embeds: [baseEmbed(`Channel information`, `Name: **#${channelName}**\nType: **${channel.type}**\nCreated: <t:${Math.floor(createdAt / 1000)}:D>`)] });
@@ -903,23 +1040,7 @@ async function executeCommand(message: Message, name: string, args: string[]) {
 }
 
 async function handleSlash(interaction: ChatInputCommandInteraction) {
-  if (interaction.commandName === "help") {
-    await interaction.reply({ embeds: [helpEmbed()] });
-    return;
-  }
-  if (interaction.commandName === "dm") {
-    const member = interaction.member as GuildMember;
-    const config = getGuildConfig(interaction.guildId!);
-    if (!allowed(member, config, "staff")) {
-      await interaction.reply({ embeds: [errorEmbed("Only configured staff can use anonymous DM.")], ephemeral: true });
-      return;
-    }
-    const target = interaction.options.getUser("user", true);
-    const text = interaction.options.getString("message", true);
-    await target.send({ embeds: [baseEmbed("Anonymous message", text, color(config.colours.warning))] }).catch(() => undefined);
-    addAnonymousDmLog(interaction.guildId!, interaction.user.id, target.id, crypto.createHash("sha256").update(text).digest("hex"));
-    await interaction.reply({ embeds: [okEmbed("Anonymous message sent and securely logged.")], ephemeral: true });
-  }
+  await executeSlashCommand(interaction);
 }
 
 export function startDiscordBot() {
@@ -940,13 +1061,18 @@ export function startDiscordBot() {
   });
 
   client.once(Events.ClientReady, async (readyClient) => {
-    const commands = [
-      new SlashCommandBuilder().setName("help").setDescription("Open the management help menu"),
-      new SlashCommandBuilder().setName("dm").setDescription("Send an anonymous message").addUserOption((option) => option.setName("user").setDescription("Recipient").setRequired(true)).addStringOption((option) => option.setName("message").setDescription("Message").setRequired(true)),
-    ];
+    const commands = slashCommands();
     const rest = new REST({ version: "10" }).setToken(token);
-    await rest.put(Routes.applicationCommands(readyClient.user.id), { body: commands.map((command) => command.toJSON()) }).catch((error: unknown) => logger.error({ err: error }, "Unable to register slash commands"));
-    logger.info({ tag: readyClient.user.tag, guilds: readyClient.guilds.cache.size }, "Discord management bot ready");
+    const body = commands.map((command) => command.toJSON());
+    let registeredGuilds = 0;
+    for (const guild of readyClient.guilds.cache.values()) {
+      await rest.put(Routes.applicationGuildCommands(readyClient.user.id, guild.id), { body })
+        .then(() => { registeredGuilds += 1; })
+        .catch((error: unknown) => logger.error({ err: error, guildId: guild.id }, "Unable to register guild slash commands"));
+    }
+    await rest.put(Routes.applicationCommands(readyClient.user.id), { body: [] })
+      .catch((error: unknown) => logger.error({ err: error }, "Unable to clear old global slash commands"));
+    logger.info({ tag: readyClient.user.tag, guilds: readyClient.guilds.cache.size, commands: body.length, registeredGuilds }, "Discord management bot ready");
   });
 
   client.on(Events.MessageCreate, async (message) => {
