@@ -158,6 +158,26 @@ function reportButtons(kind: string) {
   );
 }
 
+function ticketPanelPayload() {
+  return {
+    embeds: [
+      baseEmbed(
+        "Support tickets",
+        "Need help from the team? Click **Create ticket** below to open a private support channel. Please include as much detail as possible so the team can help quickly.",
+      ).setFooter({ text: "Support team tickets • Please do not open duplicate tickets" }),
+    ],
+    components: [
+      new ActionRowBuilder<ButtonBuilder>().addComponents(
+        new ButtonBuilder()
+          .setCustomId("ticket:create")
+          .setLabel("Create ticket")
+          .setEmoji("🎫")
+          .setStyle(ButtonStyle.Primary),
+      ),
+    ],
+  };
+}
+
 function makeModal(id: string, title: string, fields: Array<{ id: string; label: string; placeholder: string; required?: boolean; style?: TextInputStyle }>) {
   const modal = new ModalBuilder().setCustomId(id).setTitle(title);
   const rows = fields.slice(0, 5).map((field) =>
@@ -587,7 +607,7 @@ function helpEmbed() {
   return baseEmbed("Orbit Management", "Professional tools for community owners and staff teams.")
     .addFields(
       { name: "General", value: "`!ping` `!serverinfo` `!userinfo` `!botinfo` `!help`" },
-      { name: "Reports", value: "`!ticket` `!tester` `!devreport` `!bug` `!suggest` `!apply`" },
+      { name: "Reports", value: "`!ticketpanel` `!ticket` `!tester` `!devreport` `!bug` `!suggest` `!apply`" },
       { name: "Moderation", value: "`!warn` `!warnings` `!clear` `!kick` `!ban` `!timeout` `!lock` `!slowmode`" },
       { name: "Staff", value: "`!embed` `!dm` `!say` `!announce` `!poll` `!reactionrole`" },
       { name: "Administration", value: "`!setup` `!autorole` `!autoreaction` `!welcome`" },
@@ -619,6 +639,7 @@ function slashCommands() {
     command("ticketcategory", "Set the category used for new tickets").addChannelOption((option) => option.setName("channel").setDescription("Category for new tickets").addChannelTypes(ChannelType.GuildCategory).setRequired(true)),
     command("setup", "Open the interactive server setup menu"),
     command("ticket", "Post a private support ticket panel"),
+    command("ticketpanel", "Post a private support ticket panel"),
     command("tester", "Post a tester report form panel"),
     command("devreport", "Post a developer progress form panel"),
     command("bug", "Post a bug report form panel"),
@@ -818,8 +839,12 @@ async function executeCommand(message: Message, name: string, args: string[]) {
     await reply({ embeds: [baseEmbed("Orbit setup", "Use the menu below to configure roles, channels, welcome messages, and colours. All settings are stored per server.")], components: [setupRow()] });
     return;
   }
-  if (name === "ticket") {
-    await reply({ embeds: [baseEmbed("Support tickets", "Need help from the team? Open a private support channel and explain what is going on.")], components: [new ActionRowBuilder<ButtonBuilder>().addComponents(new ButtonBuilder().setCustomId("ticket:create").setLabel("Create ticket").setEmoji("🎫").setStyle(ButtonStyle.Primary))] });
+  if (name === "ticket" || name === "ticketpanel") {
+    if (!allowed(member, config, "staff")) {
+      await reply({ embeds: [errorEmbed("Only configured staff can post a ticket panel.")] });
+      return;
+    }
+    await reply(ticketPanelPayload());
     return;
   }
   if (["tester", "devreport", "bug", "suggest", "apply"].includes(name)) {
